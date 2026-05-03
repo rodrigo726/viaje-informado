@@ -36,3 +36,6 @@ node_modules/
 
 # Bases SQLite extra
 *.sqlite3
+
+# Archivos locales de importación
+data/
