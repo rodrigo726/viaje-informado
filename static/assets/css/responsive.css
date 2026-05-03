@@ -1,0 +1,18 @@
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .vi-header .btn-vi-primary {
+    width: 100%;
+    margin-top: 10px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-section {
+    padding: 3rem 1rem;
+  }
+}

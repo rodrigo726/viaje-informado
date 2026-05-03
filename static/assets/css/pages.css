@@ -1,0 +1,69 @@
+/* =========================
+   PÁGINAS INTERNAS (LAYOUT BASE)
+   ========================= */
+
+/* Contenedor principal de página */
+.vi-page {
+    padding-top: 150px;
+    padding-bottom: 3rem;
+}
+
+/* Variante compacta */
+.vi-page--compact {
+    padding-top: 120px;
+    padding-bottom: 2rem;
+}
+
+/* Variante con Hero visual (sin padding porque el hero choca con el header) */
+.vi-page--with-hero {
+    padding-top: 0 !important;
+}
+
+/* =========================
+   ELEMENTOS INTERNOS
+   ========================= */
+
+.vi-page__header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.vi-page__title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--vi-navy-deep);
+    margin-bottom: 1rem;
+}
+
+.vi-page__subtitle {
+    color: var(--vi-muted);
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Tarjeta estandarizada para contenido interno/legal/informativo */
+.vi-page-card {
+    background-color: #ffffff;
+    padding: 3rem;
+    border-radius: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--vi-border);
+}
+
+/* =========================
+   MÓVIL Y TABLET
+   ========================= */
+@media (max-width: 992px) {
+    .vi-page {
+        padding-top: 24px;
+    }
+
+    .vi-page--compact {
+        padding-top: 16px;
+    }
+    
+    .vi-page-card {
+        padding: 2rem 1.5rem;
+    }
+}
