@@ -11,6 +11,7 @@ from .models import (
 @admin.register(CategoriaEstablecimiento)
 class CategoriaEstablecimientoAdmin(admin.ModelAdmin):
     list_display = ("nombre", "tipo_icono", "icono_bootstrap", "activo", "creado")
+    ordering = ("nombre",)
     search_fields = ("nombre", "descripcion", "icono_bootstrap")
     list_filter = ("activo", "tipo_icono")
     prepopulated_fields = {"slug": ("nombre",)}
@@ -30,6 +31,7 @@ class CategoriaEstablecimientoAdmin(admin.ModelAdmin):
 @admin.register(ServicioEstablecimiento)
 class ServicioEstablecimientoAdmin(admin.ModelAdmin):
     list_display = ("nombre", "aplica_a", "tipo_icono", "icono_bootstrap", "activo", "creado")
+    ordering = ("nombre",)
     search_fields = ("nombre", "descripcion", "icono_bootstrap")
     list_filter = ("activo", "aplica_a", "tipo_icono")
     prepopulated_fields = {"slug": ("nombre",)}
@@ -46,16 +48,35 @@ class ServicioEstablecimientoAdmin(admin.ModelAdmin):
         }),
     )
 
-class SucursalEstablecimientoInline(admin.TabularInline):
+class SucursalEstablecimientoInline(admin.StackedInline):
     model = SucursalEstablecimiento
-    extra = 1
-    fields = (
-        "nombre", "slug", "distrito", "localidad", 
-        "direccion", "telefono", "whatsapp", 
-        "horario_atencion", "es_principal", "activo"
-    )
+    extra = 0
     prepopulated_fields = {"slug": ("nombre",)}
     autocomplete_fields = ("distrito", "localidad")
+
+    fieldsets = (
+        ("Datos de la sucursal", {
+            "fields": (
+                ("nombre", "slug"),
+                ("es_principal", "activo"),
+            )
+        }),
+        ("Ubicación", {
+            "fields": (
+                ("distrito", "localidad"),
+                "direccion",
+                "referencia",
+                ("latitud", "longitud"),
+            )
+        }),
+        ("Contacto rápido", {
+            "fields": (
+                ("telefono", "whatsapp"),
+                "correo",
+                "horario_atencion",
+            )
+        }),
+    )
 
 class ImagenEstablecimientoInline(admin.TabularInline):
     model = ImagenEstablecimiento
@@ -74,7 +95,8 @@ class EstablecimientoAdmin(admin.ModelAdmin):
         "total_sucursales", "sucursal_principal", 
         "rango_precio", "rango_precios_soles", "destacado", "activo"
     )
-    list_editable = ("destacado", "activo")
+    # list_editable = ("destacado", "activo")
+    ordering = ("tipo", "nombre")
     search_fields = (
         "nombre", "descripcion_corta", "descripcion", 
         "categoria_principal__nombre", "categorias_secundarias__nombre", 
@@ -141,7 +163,12 @@ class SucursalEstablecimientoAdmin(admin.ModelAdmin):
         "establecimiento", "nombre", "distrito", 
         "localidad", "es_principal", "activo"
     )
-    list_editable = ("es_principal", "activo")
+    # list_editable = ("es_principal", "activo")
+    ordering = (
+        "establecimiento__nombre",
+        "-es_principal",
+        "nombre",
+    )
     search_fields = (
         "establecimiento__nombre", "nombre", "direccion", 
         "referencia", "distrito__nombre_oficial", "localidad__nombre"
@@ -174,14 +201,36 @@ class SucursalEstablecimientoAdmin(admin.ModelAdmin):
 @admin.register(ImagenEstablecimiento)
 class ImagenEstablecimientoAdmin(admin.ModelAdmin):
     list_display = ("establecimiento", "titulo", "orden", "activo", "creado")
-    list_editable = ("orden", "activo")
-    search_fields = ("establecimiento__nombre", "titulo", "texto_alt")
-    list_filter = ("activo", "establecimiento__tipo")
+    # list_editable = ("orden", "activo")
+    ordering = (
+        "establecimiento__nombre",
+        "orden",
+        "id",
+    )
+    search_fields = (
+        "establecimiento__nombre",
+        "titulo",
+        "texto_alt",
+    )
+    list_filter = (
+        "activo",
+        "establecimiento",
+    )
+    autocomplete_fields = (
+        "establecimiento",
+    )
+    list_per_page = 25
 
 @admin.register(ContactoSucursalEstablecimiento)
 class ContactoSucursalEstablecimientoAdmin(admin.ModelAdmin):
     list_display = ("sucursal", "tipo_contacto", "etiqueta", "valor", "es_principal", "orden", "activo")
-    list_editable = ("es_principal", "orden", "activo")
+    # list_editable = ("es_principal", "orden", "activo")
+    ordering = (
+        "sucursal__establecimiento__nombre",
+        "sucursal__nombre",
+        "orden",
+        "id",
+    )
     search_fields = ("sucursal__establecimiento__nombre", "sucursal__nombre", "etiqueta", "valor")
     list_filter = ("activo", "es_principal", "tipo_contacto", "sucursal__establecimiento__tipo")
     autocomplete_fields = ("sucursal",)
