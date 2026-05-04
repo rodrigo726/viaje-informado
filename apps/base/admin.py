@@ -1,6 +1,12 @@
 from django.contrib import admin
 from .models import HomeHeroSlide
 
+
+admin.site.site_header = "Administración Viaje Informado"
+admin.site.site_title = "Viaje Informado"
+admin.site.index_title = "Panel de administración"
+
+
 @admin.register(HomeHeroSlide)
 class HomeHeroSlideAdmin(admin.ModelAdmin):
     list_display = ['etiqueta', 'titulo_principal', 'titulo_resaltado', 'tipo_archivo', 'orden', 'activo']
