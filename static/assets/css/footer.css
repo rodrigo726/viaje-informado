@@ -1,19 +1,35 @@
 /* =========================
    FOOTER VIAJE INFORMADO
+   Paleta azul premium
    ========================= */
 
 .vi-footer {
     padding: 56px 24px 28px;
     background:
-        radial-gradient(circle at top left, rgba(199, 155, 69, 0.14), transparent 32%),
-        linear-gradient(135deg, #07111f, #008080 55%, #050b12);
-    color: #f8fafc;
+        radial-gradient(circle at top left, rgba(248, 248, 255, 0.18), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(0, 127, 255, 0.22), transparent 34%),
+        linear-gradient(135deg, #007FFF 0%, #000080 100%);
+    color: #F8F8FF;
     font-family: "Inter", sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.vi-footer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 38%),
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 38%);
+    pointer-events: none;
 }
 
 .vi-footer__container {
     width: min(1180px, 100%);
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .vi-footer__top {
@@ -27,10 +43,10 @@
     margin: 0;
     padding-bottom: 14px;
     font-size: 1.25rem;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.92);
+    color: #F8F8FF;
     position: relative;
     width: 100%;
 }
@@ -49,7 +65,12 @@
     bottom: 0;
     width: 100%;
     height: 1px;
-    background-color: rgba(199, 155, 69, 0.45);
+    background: linear-gradient(
+        90deg,
+        rgba(248, 248, 255, 0.15),
+        rgba(248, 248, 255, 0.72),
+        rgba(248, 248, 255, 0.15)
+    );
 }
 
 .vi-footer__brand h3::after {
@@ -63,27 +84,46 @@
 .vi-footer__brand p {
     margin: 18px 0 0;
     max-width: 420px;
-    color: rgba(255, 255, 255, 0.82);
+    color: rgba(248, 248, 255, 0.84);
     line-height: 1.6;
     font-size: 0.95rem;
 }
 
+/* =========================
+   LOGO FOOTER
+   ========================= */
+
 .vi-footer__logo {
-    width: 170px;
-    height: 170px;
+    width: 190px;
+    height: 190px;
     display: grid;
     place-items: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(199, 155, 69, 0.28);
-    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.25);
     align-self: center;
+
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    /* Ayuda a evitar parpadeos raros en móvil */
+    isolation: isolate;
 }
 
 .vi-footer__logo img {
-    width: 138px;
+    width: 175px;
     height: auto;
     display: block;
+
+    /* Quitamos el filtro que puede generar el cuadrado temporal */
+    filter: none;
+
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    /* Mejora renderizado en móvil */
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .vi-footer__contact {
@@ -93,13 +133,17 @@
     align-items: flex-end;
 }
 
+/* =========================
+   LINKS INTERMEDIOS
+   ========================= */
+
 .vi-footer__middle {
     display: flex;
     justify-content: space-between;
     gap: 28px;
     margin-top: 42px;
     padding-top: 28px;
-    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    border-top: 1px solid rgba(248, 248, 255, 0.18);
 }
 
 .vi-footer__policies,
@@ -111,27 +155,30 @@
 
 .vi-footer__policies a,
 .vi-footer__nav a {
-    color: rgba(255, 255, 255, 0.82);
+    color: rgba(248, 248, 255, 0.82);
     text-decoration: none;
     font-size: 0.9rem;
-    transition: color 0.25s ease;
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
 }
 
 .vi-footer__policies a:hover,
 .vi-footer__nav a:hover {
-    color: #c79b45;
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
 .vi-footer__bottom {
     margin-top: 30px;
     padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    border-top: 1px solid rgba(248, 248, 255, 0.18);
     text-align: center;
 }
 
 .vi-footer__bottom p {
     margin: 0;
-    color: rgba(248, 250, 252, 0.66);
+    color: rgba(248, 248, 255, 0.70);
     font-size: 0.85rem;
 }
 
@@ -158,16 +205,17 @@
     top: -30px;
     left: 50%;
     transform: translateX(-50%);
-    color: #ffffff;
+    color: #F8F8FF;
     padding: 6px 10px;
-    border-radius: 5px;
+    border-radius: 7px;
     opacity: 0;
     visibility: hidden;
     font-size: 13px;
     white-space: nowrap;
     transition: all 0.3s ease;
     z-index: 10;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 45, 137, 0.92);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
 }
 
 .vi-social-icons__item:hover .tooltip {
@@ -182,18 +230,33 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
     width: 64px;
     height: 64px;
     border-radius: 50%;
-    color: #4d4d4d;
-    background-color: #ffffff;
+
+    color: #002d89;
+    background-color: #F8F8FF;
+    border: 1px solid rgba(248, 248, 255, 0.58);
     text-decoration: none;
-    transition: all 0.3s ease-in-out;
+
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
+    transition:
+        color 0.3s ease-in-out,
+        transform 0.3s ease-in-out,
+        box-shadow 0.3s ease-in-out,
+        border-color 0.3s ease-in-out;
 }
 
 .vi-social-icons__item a:hover {
-    color: #ffffff;
-    box-shadow: 3px 2px 25px 0px rgba(0, 0, 0, 0.3);
+    color: #F8F8FF;
+    border-color: rgba(248, 248, 255, 0.85);
+    box-shadow:
+        0 16px 34px rgba(0, 0, 0, 0.26),
+        0 0 0 4px rgba(248, 248, 255, 0.10);
     transform: translateY(-2px);
 }
 
@@ -209,7 +272,7 @@
     inset: auto 0 0 0;
     width: 100%;
     height: 0;
-    background-color: #000000;
+    background: linear-gradient(135deg, #007FFF 0%, #000080 100%);
     transition: all 0.3s ease-in-out;
     z-index: 1;
 }
@@ -220,17 +283,17 @@
 
 /* GOOGLE */
 .vi-social-icons__item a[data-social="google"] .filled {
-    background: linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335);
+    background: linear-gradient(135deg, #007FFF 0%, #000080 100%);
 }
 
 /* FACEBOOK */
 .vi-social-icons__item a[data-social="facebook"] .filled {
-    background-color: #1877f2;
+    background: linear-gradient(135deg, #007FFF 0%, #000080 100%);
 }
 
 /* INSTAGRAM */
 .vi-social-icons__item a[data-social="instagram"] .filled {
-    background: linear-gradient(45deg, #405de6, #5b51db, #b33ab4, #c13584, #e1306c, #fd1d1d, #f77737, #fcaf45);
+    background: linear-gradient(135deg, #007FFF 0%, #000080 100%);
 }
 
 .vi-social-icons:hover > :not(:hover) {
@@ -256,6 +319,7 @@
 
     .vi-footer__contact {
         align-items: center;
+        text-align: center;
     }
 
     .vi-footer__brand h3,
@@ -301,13 +365,17 @@
         font-size: 1.15rem;
     }
 
+    .vi-footer__brand p {
+        font-size: 0.92rem;
+    }
+
     .vi-footer__logo {
         width: 145px;
         height: 145px;
     }
 
     .vi-footer__logo img {
-        width: 118px;
+        width: 132px;
     }
 
     .vi-social-icons {

@@ -1,0 +1,1025 @@
+/* =========================================================
+   Listado público de Establecimientos - Viaje Informado
+   Fase 6A
+   CSS encapsulado para no afectar header/footer global
+========================================================= */
+
+/* =========================================================
+   Variables locales de esta página
+========================================================= */
+
+.establecimientos-pagina {
+    --est-fondo-suave: #F8F8FF;
+
+    --est-azul-claro: #007FFF;
+    --est-azul-oscuro: #002d89;
+    --est-azul-profundo: #000080;
+    --est-acento-gradiente: linear-gradient(135deg, #007FFF 0%, #000080 100%);
+
+    --est-tarjeta-fondo: #F8F8FF;
+    --est-tarjeta-borde: rgba(0, 45, 137, 0.12);
+
+    --est-texto-titulo: #0b0c10;
+    --est-texto-principal: #002d89;
+    --est-texto-secundario: #5f6b7a;
+    --est-texto-suave: #4f5f75;
+
+    --est-blanco: #ffffff;
+}
+
+/* =========================================================
+   Fondo general y encabezado interno
+========================================================= */
+
+.establecimientos-pagina .seccion-fondo-principal {
+    background-color: var(--est-fondo-suave);
+    min-height: 100vh;
+    padding: 0 0 120px;
+}
+
+.establecimientos-pagina .establecimientos-encabezado {
+    background-color: var(--est-fondo-suave);
+    padding: 150px 0 54px;
+    text-align: center;
+}
+
+.establecimientos-pagina .establecimientos-encabezado h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    color: var(--est-texto-titulo);
+    margin-bottom: 12px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.establecimientos-pagina .establecimientos-encabezado p {
+    font-size: 1.05rem;
+    color: var(--est-texto-secundario);
+    margin-bottom: 0;
+}
+
+/* =========================================================
+   Contenedor de filtros
+========================================================= */
+
+.establecimientos-pagina .filtros-contenedor {
+    background-color: var(--est-blanco);
+    padding: 22px 24px;
+    border-radius: 14px;
+    margin-top: -24px;
+    margin-bottom: 46px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 18px 45px rgba(0, 45, 137, 0.08);
+    border: 1px solid rgba(0, 45, 137, 0.06);
+}
+
+.establecimientos-pagina .filtros-contenedor .form-control,
+.establecimientos-pagina .filtros-contenedor .form-select {
+    min-height: 45px;
+    background-color: var(--est-blanco);
+    border: 1px solid rgba(0, 45, 137, 0.16);
+    color: var(--est-azul-oscuro);
+    border-radius: 7px;
+    box-shadow: none;
+}
+
+.establecimientos-pagina .filtros-contenedor .form-control::placeholder {
+    color: rgba(0, 45, 137, 0.58);
+}
+
+.establecimientos-pagina .filtros-contenedor .form-control:focus,
+.establecimientos-pagina .filtros-contenedor .form-select:focus {
+    border-color: var(--est-azul-oscuro);
+    box-shadow: 0 0 0 0.22rem rgba(0, 127, 255, 0.16);
+}
+
+.establecimientos-pagina .filtro-busqueda-grupo .input-group-text {
+    min-height: 45px;
+    background-color: var(--est-blanco);
+    color: var(--est-azul-oscuro);
+    border: 1px solid rgba(0, 45, 137, 0.16);
+    border-right: 0;
+    border-radius: 7px 0 0 7px;
+}
+
+.establecimientos-pagina .filtro-busqueda-grupo .form-control {
+    border-left: 0;
+    border-radius: 0 7px 7px 0;
+}
+
+/* =========================================================
+   Botones de filtros
+========================================================= */
+
+.establecimientos-pagina .btn-dorado {
+    min-height: 45px;
+    background: var(--est-acento-gradiente);
+    color: var(--est-fondo-suave);
+    font-weight: 700;
+    border: 1px solid var(--est-azul-oscuro);
+    border-radius: 7px;
+    transition: all 0.25s ease;
+}
+
+.establecimientos-pagina .btn-dorado:hover {
+    background: var(--est-fondo-suave);
+    border-color: var(--est-azul-oscuro);
+    color: var(--est-azul-oscuro);
+    transform: translateY(-1px);
+}
+
+.establecimientos-pagina .btn-contorno-dorado {
+    background-color: transparent;
+    color: var(--est-azul-oscuro);
+    border: 1px solid var(--est-azul-oscuro);
+    border-radius: 7px;
+    transition: all 0.25s ease;
+}
+
+.establecimientos-pagina .btn-contorno-dorado:hover {
+    background: var(--est-acento-gradiente);
+    color: var(--est-fondo-suave);
+    border-color: var(--est-azul-oscuro);
+}
+
+.establecimientos-pagina .btn-limpiar-filtro {
+    min-width: 46px;
+    min-height: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   Resumen de filtros: contador y ordenamiento
+========================================================= */
+
+.establecimientos-pagina .filtros-resumen {
+    margin-top: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.establecimientos-pagina .contador-resultados {
+    color: var(--est-texto-secundario);
+    font-size: 0.95rem;
+}
+
+.establecimientos-pagina .orden-caja {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.establecimientos-pagina .orden-caja label {
+    color: var(--est-texto-titulo);
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.establecimientos-pagina .orden-caja .form-select {
+    min-height: 36px;
+    width: auto;
+    min-width: 142px;
+    font-size: 0.88rem;
+}
+
+/* =========================================================
+   Switch premium con movimiento deslizante
+   Restaurantes / Alojamientos
+========================================================= */
+
+.establecimientos-pagina .tipo-conmutador-contenedor {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 24px;
+}
+
+.establecimientos-pagina .tipo-conmutador {
+    width: min(560px, 100%);
+    min-height: 58px;
+    padding: 6px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 999px;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(248, 248, 255, 0.82));
+    border: 1px solid rgba(0, 45, 137, 0.08);
+
+    box-shadow:
+        0 18px 42px rgba(0, 45, 137, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -1px 0 rgba(0, 45, 137, 0.06);
+}
+
+.establecimientos-pagina .tipo-fondo-activo {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 0;
+
+    width: calc(50% - 6px);
+    height: calc(100% - 12px);
+
+    border-radius: 999px;
+    background: var(--est-acento-gradiente);
+
+    box-shadow:
+        0 12px 26px rgba(0, 45, 137, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+
+    transition:
+        transform 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.25s ease;
+}
+
+.establecimientos-pagina .tipo-conmutador--izquierda .tipo-fondo-activo {
+    transform: translateX(0);
+}
+
+.establecimientos-pagina .tipo-conmutador--derecha .tipo-fondo-activo {
+    transform: translateX(100%);
+}
+
+.establecimientos-pagina .tipo-opcion {
+    min-height: 46px;
+    padding: 0 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    position: relative;
+    z-index: 1;
+
+    border-radius: 999px;
+    text-decoration: none;
+    background: transparent;
+
+    color: var(--est-azul-oscuro);
+    font-size: 1.03rem;
+    font-weight: 700;
+    line-height: 1;
+
+    transition:
+        color 0.28s ease,
+        transform 0.25s ease;
+}
+
+.establecimientos-pagina .tipo-opcion:hover {
+    color: var(--est-azul-profundo);
+    transform: translateY(-1px);
+}
+
+.establecimientos-pagina .tipo-opcion.active {
+    color: var(--est-fondo-suave);
+}
+
+.establecimientos-pagina .tipo-opcion.active::after {
+    display: none;
+}
+
+.establecimientos-pagina .tipo-icono {
+    width: 25px;
+    height: 25px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: currentColor;
+    flex: 0 0 auto;
+}
+
+.establecimientos-pagina .tipo-icono svg {
+    width: 25px;
+    height: 25px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.establecimientos-pagina .tipo-opcion.active .tipo-icono,
+.establecimientos-pagina .tipo-opcion.active span:last-child {
+    color: var(--est-fondo-suave);
+}
+
+/* =========================================================
+   Grilla de tarjetas
+========================================================= */
+
+.establecimientos-pagina .est-grilla {
+    --bs-gutter-x: 4.8rem;
+    --bs-gutter-y: 5.8rem;
+    align-items: stretch;
+}
+
+.establecimientos-pagina .est-columna-tarjeta {
+    display: flex;
+    justify-content: center;
+    padding-top: 68px;
+}
+
+/* =========================================================
+   Tarjeta compacta premium
+========================================================= */
+
+.establecimientos-pagina .est-tarjeta {
+    width: 100%;
+    max-width: 380px;
+    min-height: 420px;
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 86px 34px 24px;
+
+    color: var(--est-azul-oscuro);
+    background:
+        radial-gradient(circle at 20% 0%, rgba(0, 127, 255, 0.045), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, var(--est-tarjeta-fondo) 100%);
+    border-radius: 22px;
+    border: 1px solid var(--est-tarjeta-borde);
+
+    box-shadow:
+        0 24px 55px rgba(0, 45, 137, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
+    transition:
+        transform 0.28s ease,
+        box-shadow 0.28s ease;
+}
+
+.establecimientos-pagina .est-tarjeta:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 34px 70px rgba(0, 45, 137, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* =========================================================
+   Imagen / logo flotante tipo banner
+========================================================= */
+
+.establecimientos-pagina .est-imagen-contenedor {
+    position: absolute;
+    top: -58px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 312px;
+    height: 116px;
+
+    border-radius: 16px;
+    overflow: hidden;
+
+    background: transparent;
+    border: none;
+
+    box-shadow:
+        0 16px 32px rgba(0, 45, 137, 0.18),
+        0 3px 10px rgba(0, 0, 0, 0.10);
+}
+
+.establecimientos-pagina .est-imagen-contenedor img {
+    width: 100%;
+    height: 100%;
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+
+    background: transparent;
+}
+
+.establecimientos-pagina .est-imagen-vacia {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--est-acento-gradiente);
+    color: var(--est-fondo-suave);
+    font-size: 2.1rem;
+    opacity: 0.95;
+}
+
+/* =========================================================
+   Contenido de tarjeta
+========================================================= */
+
+.establecimientos-pagina .est-contenido-grupo {
+    min-height: 116px;
+    flex: 0 0 auto;
+}
+
+.establecimientos-pagina .est-categoria {
+    color: var(--est-azul-oscuro);
+    font-size: 0.72rem;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+
+.establecimientos-pagina .est-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.52rem;
+    line-height: 1.12;
+    font-weight: 800;
+    color: var(--est-texto-titulo);
+    margin: 0;
+    max-width: 100%;
+}
+
+.establecimientos-pagina .est-divisor {
+    width: 52px;
+    height: 2px;
+    background: var(--est-acento-gradiente);
+    margin-top: 12px;
+    opacity: 0.95;
+}
+
+/* =========================================================
+   Precio y dirección
+========================================================= */
+
+.establecimientos-pagina .est-info-grupo {
+    min-height: 82px;
+    flex: 0 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    margin-bottom: 16px;
+}
+
+.establecimientos-pagina .est-info-elemento {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    column-gap: 12px;
+    align-items: start;
+
+    color: var(--est-azul-oscuro);
+    font-size: 0.94rem;
+    line-height: 1.32;
+    margin-bottom: 10px;
+}
+
+.establecimientos-pagina .est-info-elemento:last-child {
+    margin-bottom: 0;
+}
+
+.establecimientos-pagina .est-info-elemento i {
+    color: var(--est-azul-oscuro);
+    font-size: 1.04rem;
+    line-height: 1.32;
+    margin-top: 1px;
+}
+
+.establecimientos-pagina .est-precio {
+    color: var(--est-azul-oscuro);
+    font-weight: 900;
+    letter-spacing: 0.01em;
+}
+
+.establecimientos-pagina .est-direccion {
+    color: var(--est-azul-oscuro);
+}
+
+/* =========================================================
+   Acción
+========================================================= */
+
+.establecimientos-pagina .est-accion {
+    flex: 0 0 auto;
+    margin-top: 0;
+}
+
+.establecimientos-pagina .est-accion .btn {
+    width: 100%;
+    min-height: 44px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    font-size: 0.82rem;
+    letter-spacing: 0.15em;
+    font-weight: 900;
+    padding: 10px 16px;
+}
+
+/* =========================================================
+   Paginación premium tipo tabs
+========================================================= */
+
+.establecimientos-pagina .est-paginacion-contenedor {
+    margin-top: 62px;
+}
+
+.establecimientos-pagina .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    overflow: visible;
+    margin-bottom: 0;
+}
+
+/* Flechas */
+.establecimientos-pagina .pagination .page-link {
+    min-width: 42px;
+    height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+    border: 1px solid rgba(0, 45, 137, 0.16);
+    background-color: var(--est-blanco);
+    color: var(--est-azul-oscuro);
+
+    font-weight: 700;
+    text-decoration: none;
+
+    box-shadow: none;
+
+    transition:
+        color 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.establecimientos-pagina .pagination .page-link:hover {
+    border-color: var(--est-azul-oscuro);
+    color: var(--est-azul-oscuro);
+    background-color: var(--est-fondo-suave);
+    transform: translateY(-1px);
+}
+
+.establecimientos-pagina .pagination .page-item.disabled .page-link {
+    color: rgba(0, 45, 137, 0.28);
+    background-color: var(--est-fondo-suave);
+    border-color: rgba(0, 45, 137, 0.10);
+    pointer-events: none;
+}
+
+/* Números */
+.establecimientos-pagina .pagination .page-number .page-link {
+    position: relative;
+    isolation: isolate;
+    overflow: visible;
+
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+
+    border-radius: 12px;
+    border: 1px solid rgba(0, 45, 137, 0.18);
+    background-color: transparent;
+
+    color: var(--est-texto-titulo);
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.48s cubic-bezier(0.23, 1, 0.32, 1),
+        border-color 0.48s cubic-bezier(0.23, 1, 0.32, 1),
+        transform 0.48s cubic-bezier(0.23, 1, 0.32, 1),
+        background 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.establecimientos-pagina .pagination .page-number .page-link span {
+    position: relative;
+    z-index: 2;
+}
+
+/* Fondo animado del número activo */
+.establecimientos-pagina .pagination .page-number .page-link::before {
+    content: "";
+    position: absolute;
+    top: -24px;
+    left: 50%;
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 12px;
+    background: var(--est-acento-gradiente);
+
+    transform: translate(-50%, -50%) scale(0);
+    transform-origin: center;
+    opacity: 0;
+
+    z-index: 1;
+
+    transition:
+        top 0.48s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.48s cubic-bezier(0.23, 1, 0.32, 1),
+        transform 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Puntito inferior del número activo */
+.establecimientos-pagina .pagination .page-number .page-link::after {
+    content: "";
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+    background: var(--est-acento-gradiente);
+
+    transform: translateX(-50%) scale(0);
+    transform-origin: center;
+    opacity: 0;
+
+    z-index: 1;
+
+    transition:
+        bottom 0.48s 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+        opacity 0.48s 0.2s cubic-bezier(0.23, 1, 0.32, 1),
+        transform 0.48s 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.establecimientos-pagina .pagination .page-number .page-link:hover {
+    border-color: var(--est-azul-oscuro);
+    color: var(--est-azul-oscuro);
+    background-color: transparent;
+}
+
+/* Número activo */
+.establecimientos-pagina .pagination .page-number.active .page-link {
+    border-color: transparent;
+    color: var(--est-fondo-suave);
+    background-color: transparent;
+    transform: scale(1.08);
+}
+
+.establecimientos-pagina .pagination .page-number.active .page-link::before {
+    top: 50%;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+
+    box-shadow:
+        0 6px 13px rgba(0, 45, 137, 0.16),
+        0 24px 24px rgba(0, 45, 137, 0.10),
+        0 55px 33px rgba(0, 45, 137, 0.06),
+        0 97px 39px rgba(0, 45, 137, 0.02);
+}
+
+.establecimientos-pagina .pagination .page-number.active .page-link::after {
+    bottom: -16px;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+
+    box-shadow:
+        0 6px 13px rgba(0, 45, 137, 0.14),
+        0 24px 24px rgba(0, 45, 137, 0.10),
+        0 55px 33px rgba(0, 45, 137, 0.06);
+}
+
+/* =========================================================
+   Responsive escritorio grande
+========================================================= */
+
+@media (min-width: 1400px) {
+    .establecimientos-pagina .est-grilla {
+        --bs-gutter-x: 5.2rem;
+    }
+
+    .establecimientos-pagina .est-tarjeta {
+        max-width: 390px;
+        min-height: 425px;
+        padding-top: 112px;
+    }
+
+    .establecimientos-pagina .est-imagen-contenedor {
+        top: -68px;
+        width: 340px;
+        height: 138px;
+        border-radius: 18px;
+    }
+}
+
+/* =========================================================
+   Responsive escritorio / laptop
+========================================================= */
+
+@media (min-width: 992px) and (max-width: 1399.98px) {
+    .establecimientos-pagina .est-tarjeta {
+        padding-top: 108px;
+    }
+
+    .establecimientos-pagina .est-imagen-contenedor {
+        top: -66px;
+        width: 326px;
+        height: 134px;
+        border-radius: 18px;
+    }
+}
+
+/* =========================================================
+   Responsive tablet
+========================================================= */
+
+@media (max-width: 1199.98px) {
+    .establecimientos-pagina .est-grilla {
+        --bs-gutter-x: 3rem;
+        --bs-gutter-y: 6.2rem;
+    }
+
+    .establecimientos-pagina .est-tarjeta {
+        max-width: 370px;
+    }
+
+    .establecimientos-pagina .est-imagen-contenedor {
+        width: 300px;
+        height: 114px;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .establecimientos-pagina .establecimientos-encabezado {
+        padding: 135px 0 50px;
+    }
+
+    .establecimientos-pagina .establecimientos-encabezado h1 {
+        font-size: clamp(2.4rem, 7vw, 4rem);
+    }
+
+    .establecimientos-pagina .filtros-contenedor {
+        margin-bottom: 62px;
+    }
+
+    .establecimientos-pagina .est-grilla {
+        --bs-gutter-y: 6.8rem;
+    }
+}
+
+/* =========================================================
+   Responsive móvil
+========================================================= */
+
+@media (max-width: 767.98px) {
+    .establecimientos-pagina .seccion-fondo-principal {
+        padding-bottom: 120px;
+    }
+
+    .establecimientos-pagina .establecimientos-encabezado {
+        padding: 55px 0 44px;
+    }
+
+    .establecimientos-pagina .establecimientos-encabezado h1 {
+        font-size: clamp(2.4rem, 9vw, 3.7rem);
+        line-height: 1.12;
+        max-width: 680px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .establecimientos-pagina .establecimientos-encabezado p {
+        font-size: 1.08rem;
+        line-height: 1.55;
+        max-width: 620px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .establecimientos-pagina .filtros-contenedor {
+        padding: 20px;
+        border-radius: 16px;
+        margin-top: -12px;
+        margin-bottom: 48px;
+    }
+
+    .establecimientos-pagina .filtros-resumen {
+        align-items: flex-start;
+        gap: 18px;
+    }
+
+    .establecimientos-pagina .contador-resultados {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+
+    .establecimientos-pagina .orden-caja {
+        align-items: center;
+    }
+
+    .establecimientos-pagina .orden-caja label {
+        white-space: normal;
+        line-height: 1.25;
+    }
+
+    .establecimientos-pagina .tipo-conmutador-contenedor {
+        margin-bottom: 22px;
+    }
+
+    .establecimientos-pagina .tipo-conmutador {
+        width: 100%;
+        min-height: 56px;
+        padding: 5px;
+    }
+
+    .establecimientos-pagina .tipo-fondo-activo {
+        top: 5px;
+        left: 5px;
+        width: calc(50% - 5px);
+        height: calc(100% - 10px);
+    }
+
+    .establecimientos-pagina .tipo-opcion {
+        min-height: 46px;
+        padding: 0 14px;
+        gap: 9px;
+        font-size: 0.96rem;
+    }
+
+    .establecimientos-pagina .tipo-icono,
+    .establecimientos-pagina .tipo-icono svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .establecimientos-pagina .est-grilla {
+        --bs-gutter-y: 2.8rem;
+    }
+
+    .establecimientos-pagina .est-columna-tarjeta {
+        padding-top: 82px;
+    }
+
+    .establecimientos-pagina .est-tarjeta {
+        max-width: 92vw;
+        min-height: auto;
+        padding: 124px 30px 30px;
+        border-radius: 24px;
+    }
+
+    .establecimientos-pagina .est-imagen-contenedor {
+        top: -76px;
+        width: min(360px, 90vw);
+        height: 150px;
+        border-radius: 20px;
+    }
+
+    .establecimientos-pagina .est-contenido-grupo {
+        min-height: auto;
+        margin-bottom: 24px;
+    }
+
+    .establecimientos-pagina .est-categoria {
+        font-size: 0.82rem;
+        letter-spacing: 0.18em;
+        margin-bottom: 14px;
+    }
+
+    .establecimientos-pagina .est-titulo {
+        font-size: clamp(1.8rem, 7vw, 2.55rem);
+        line-height: 1.1;
+    }
+
+    .establecimientos-pagina .est-divisor {
+        width: 62px;
+        margin-top: 18px;
+    }
+
+    .establecimientos-pagina .est-info-grupo {
+        min-height: auto;
+        margin-bottom: 22px;
+    }
+
+    .establecimientos-pagina .est-info-elemento {
+        grid-template-columns: 28px 1fr;
+        column-gap: 16px;
+        font-size: 1.14rem;
+        line-height: 1.38;
+        margin-bottom: 18px;
+    }
+
+    .establecimientos-pagina .est-info-elemento i {
+        font-size: 1.3rem;
+        margin-top: 1px;
+    }
+
+    .establecimientos-pagina .est-accion .btn {
+        min-height: 54px;
+        font-size: 0.96rem;
+        border-radius: 10px;
+    }
+}
+
+/* =========================================================
+   Responsive celulares pequeños
+========================================================= */
+
+@media (max-width: 575.98px) {
+    .establecimientos-pagina .establecimientos-encabezado {
+        padding-top: 42px;
+    }
+
+    .establecimientos-pagina .filtros-contenedor {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+
+    .establecimientos-pagina .filtros-resumen {
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
+    .establecimientos-pagina .orden-caja {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .establecimientos-pagina .orden-caja .form-select {
+        min-width: 150px;
+    }
+
+    .establecimientos-pagina .tipo-opcion {
+        font-size: 0.88rem;
+        padding: 0 10px;
+        gap: 7px;
+    }
+
+    .establecimientos-pagina .tipo-icono,
+    .establecimientos-pagina .tipo-icono svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .establecimientos-pagina .est-grilla {
+        --bs-gutter-y: 2.6rem;
+    }
+
+    .establecimientos-pagina .est-tarjeta {
+        max-width: 100%;
+        padding-left: 28px;
+        padding-right: 28px;
+        padding-top: 120px;
+    }
+
+    .establecimientos-pagina .est-columna-tarjeta {
+        padding-top: 80px;
+    }
+
+    .establecimientos-pagina .est-imagen-contenedor {
+        top: -74px;
+        width: min(350px, 90vw);
+        height: 146px;
+        border-radius: 20px;
+    }
+
+    .establecimientos-pagina .pagination {
+        gap: 8px;
+    }
+
+    .establecimientos-pagina .pagination .page-link {
+        min-width: 40px;
+        height: 40px;
+    }
+
+    .establecimientos-pagina .pagination .page-number .page-link {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+    }
+
+    .establecimientos-pagina .pagination .page-number .page-link::before {
+        width: 44px;
+        height: 44px;
+    }
+}

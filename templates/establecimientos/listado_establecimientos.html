@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }} | Viaje Informado Huánuco{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/establecimientos.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'assets/js/switch-establecimientos.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+
+<main class="establecimientos-pagina">
+
+    <!-- Encabezado del listado -->
+    <section class="establecimientos-encabezado">
+        <div class="container">
+            <h1>{{ titulo }}</h1>
+            <p>{{ subtitulo }}</p>
+        </div>
+    </section>
+
+    <section class="seccion-fondo-principal">
+        <div class="container">
+
+            <!-- Filtros -->
+            <div class="filtros-contenedor">
+
+                <!-- Switch de apartados: Restaurantes / Alojamientos -->
+                <div class="tipo-conmutador-contenedor">
+                    <div class="tipo-conmutador {% if es_alojamiento %}tipo-conmutador--derecha{% else %}tipo-conmutador--izquierda{% endif %}"
+                        aria-label="Cambiar apartado">
+
+                        <span class="tipo-fondo-activo" aria-hidden="true"></span>
+
+                        <a href="/restaurantes/" data-tipo="izquierda"
+                            class="tipo-opcion {% if es_restaurante %}active{% endif %}">
+                            <span class="tipo-icono" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M7 3v18"></path>
+                                    <path d="M5 3v6"></path>
+                                    <path d="M9 3v6"></path>
+                                    <path d="M5 9h4"></path>
+                                    <path d="M16 3v18"></path>
+                                    <path d="M16 3c2.1 1.7 3.2 4.2 3.2 7.2v1.1H16"></path>
+                                </svg>
+                            </span>
+                            <span>Restaurantes</span>
+                        </a>
+
+                        <a href="/alojamientos/" data-tipo="derecha"
+                            class="tipo-opcion {% if es_alojamiento %}active{% endif %}">
+                            <span class="tipo-icono" aria-hidden="true">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M3.5 12.5h17"></path>
+                                    <path d="M5 12.5V7.8c0-1 .8-1.8 1.8-1.8h4.4c1 0 1.8.8 1.8 1.8v4.7"></path>
+                                    <path d="M13 12.5V9h4.5c1.7 0 3 1.3 3 3v.5"></path>
+                                    <path d="M4.5 12.5v6"></path>
+                                    <path d="M19.5 12.5v6"></path>
+                                </svg>
+                            </span>
+                            <span>Alojamientos</span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <form method="GET" action="">
+                    <div class="row g-3 align-items-center">
+
+                        <div class="col-lg-5 col-md-12">
+                            <div class="input-group filtro-busqueda-grupo">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" name="q" class="form-control" placeholder="Buscar por nombre..."
+                                    value="{{ q }}">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-12">
+                            <select name="categoria" class="form-select">
+                                <option value="">Categoría</option>
+                                {% for categoria in categorias_opciones %}
+                                    <option value="{{ categoria.id }}" {% if categoria.selected %}selected{% endif %}>
+                                        {{ categoria.nombre }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-lg-3 col-md-12">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-dorado flex-grow-1">
+                                    <i class="bi bi-funnel"></i>
+                                    Buscar
+                                </button>
+
+                                <a href="{{ request.path }}" class="btn btn-contorno-dorado btn-limpiar-filtro"
+                                    title="Limpiar filtros">
+                                    <i class="bi bi-eraser"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="filtros-resumen">
+                        <span class="contador-resultados">
+                            Mostrando {{ total_resultados }} resultados
+                        </span>
+
+                        <div class="orden-caja">
+                            <label for="orden_select">Ordenar por:</label>
+                            <select name="orden" id="orden_select" class="form-select form-select-sm"
+                                onchange="this.form.submit()">
+                                {% for opcion in opciones_orden %}
+                                    <option value="{{ opcion.value }}" {% if opcion.selected %}selected{% endif %}>
+                                        {{ opcion.label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- Listado -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center est-grilla">
+
+                {% for est in page_obj %}
+                    <div class="col est-columna-tarjeta">
+                        <article class="est-tarjeta">
+
+                            <div class="est-imagen-contenedor">
+                                {% if est.imagen_principal %}
+                                    <img src="{{ est.imagen_principal.url }}"
+                                        alt="{{ est.texto_alt_imagen|default:est.nombre }}">
+                                {% else %}
+                                    <div class="est-imagen-vacia">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="est-contenido-grupo">
+                                <div class="est-categoria">
+                                    {% if est.categoria_principal %}
+                                        {{ est.categoria_principal.nombre }}
+                                    {% else %}
+                                        Establecimiento
+                                    {% endif %}
+                                </div>
+
+                                <h3 class="est-titulo">
+                                    {{ est.nombre }}
+                                </h3>
+
+                                <div class="est-divisor"></div>
+                            </div>
+
+                            <div class="est-info-grupo">
+
+                                {% if est.rango_precio != 'consultar' or est.precio_desde or est.precio_hasta %}
+                                    <div class="est-info-elemento est-precio-fila">
+                                        <i class="bi bi-tag"></i>
+                                        <span class="est-precio">
+                                            {% if est.precio_desde and est.precio_hasta %}
+                                                S/ {{ est.precio_desde|floatformat:0 }} - {{ est.precio_hasta|floatformat:0 }}
+                                            {% elif est.precio_desde %}
+                                                Desde S/ {{ est.precio_desde|floatformat:0 }}
+                                            {% elif est.rango_precio %}
+                                                {{ est.get_rango_precio_display }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                {% endif %}
+
+                                {% with sucursal=est.sucursales.all.0 %}
+                                    {% if sucursal and sucursal.direccion %}
+                                        <div class="est-info-elemento est-direccion-fila">
+                                            <i class="bi bi-geo-alt"></i>
+                                            <span class="est-direccion">
+                                                {{ sucursal.direccion }}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                {% endwith %}
+
+                            </div>
+
+                            <div class="est-accion">
+                                <a href="#" class="btn btn-contorno-dorado text-uppercase">
+                                    Ver Más &rarr;
+                                </a>
+                            </div>
+
+                        </article>
+                    </div>
+
+                {% empty %}
+
+                    <div class="col-12 text-center py-5 mt-5">
+                        <i class="bi bi-search display-1 text-muted mb-3"></i>
+                        <h3 class="text-dark">No se encontraron resultados</h3>
+                        <p class="text-muted">Intenta cambiar los filtros de búsqueda.</p>
+                        <a href="{{ request.path }}" class="btn btn-contorno-dorado mt-3">
+                            Limpiar filtros
+                        </a>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Navegación de páginas" class="d-flex justify-content-center est-paginacion-contenedor">
+                    <ul class="pagination">
+
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="?page=1{% if q %}&q={{ q }}{% endif %}{% if categoria_sel %}&categoria={{ categoria_sel }}{% endif %}{% if orden_sel %}&orden={{ orden_sel }}{% endif %}"
+                                    aria-label="Primera">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if categoria_sel %}&categoria={{ categoria_sel }}{% endif %}{% if orden_sel %}&orden={{ orden_sel }}{% endif %}"
+                                    aria-label="Anterior">
+                                    <span aria-hidden="true">&lsaquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&lsaquo;</span>
+                            </li>
+                        {% endif %}
+
+                        {% for i in page_obj.paginator.page_range %}
+                            {% if page_obj.number == i %}
+                                <li class="page-item page-number active" aria-current="page">
+                                    <span class="page-link">
+                                        <span>{{ i }}</span>
+                                    </span>
+                                </li>
+                            {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                                <li class="page-item page-number">
+                                    <a class="page-link"
+                                        href="?page={{ i }}{% if q %}&q={{ q }}{% endif %}{% if categoria_sel %}&categoria={{ categoria_sel }}{% endif %}{% if orden_sel %}&orden={{ orden_sel }}{% endif %}">
+                                        <span>{{ i }}</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if categoria_sel %}&categoria={{ categoria_sel }}{% endif %}{% if orden_sel %}&orden={{ orden_sel }}{% endif %}"
+                                    aria-label="Siguiente">
+                                    <span aria-hidden="true">&rsaquo;</span>
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if categoria_sel %}&categoria={{ categoria_sel }}{% endif %}{% if orden_sel %}&orden={{ orden_sel }}{% endif %}"
+                                    aria-label="Última">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&rsaquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
+            {% endif %}
+
+        </div>
+    </section>
+
+</main>
+
+{% endblock %}
