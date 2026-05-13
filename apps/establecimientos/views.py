@@ -1,9 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
 from django.db.models import Q, Prefetch
 from .models import (
+    ContactoSucursalEstablecimiento,
     Establecimiento,
     CategoriaEstablecimiento,
+    ImagenEstablecimiento,
+    ServicioEstablecimiento,
     SucursalEstablecimiento,
 )
 
@@ -178,3 +181,65 @@ def listado_alojamientos(request):
         "Encuentra el lugar perfecto para descansar y disfrutar de tu estadía."
     )
     return render(request, "establecimientos/listado_establecimientos.html", context)
+
+
+def detalle_establecimiento(request, tipo_establecimiento, slug):
+    sucursales_prefetch = Prefetch(
+        "sucursales",
+        queryset=SucursalEstablecimiento.objects.filter(
+            activo=True
+        ).select_related(
+            "distrito",
+            "localidad"
+        ).prefetch_related(
+            Prefetch(
+                "contactos",
+                queryset=ContactoSucursalEstablecimiento.objects.filter(
+                    activo=True
+                ).order_by(
+                    "-es_principal",
+                    "orden",
+                    "id"
+                )
+            )
+        ).order_by(
+            "-es_principal",
+            "nombre",
+            "id"
+        )
+    )
+
+    establecimiento = get_object_or_404(
+        Establecimiento.objects.filter(
+            activo=True,
+            tipo=tipo_establecimiento
+        ).select_related(
+            "categoria_principal"
+        ).prefetch_related(
+            Prefetch(
+                "categorias_secundarias",
+                queryset=CategoriaEstablecimiento.objects.filter(activo=True).order_by("nombre")
+            ),
+            Prefetch(
+                "servicios",
+                queryset=ServicioEstablecimiento.objects.filter(activo=True).order_by("nombre")
+            ),
+            Prefetch(
+                "imagenes",
+                queryset=ImagenEstablecimiento.objects.filter(activo=True).order_by("orden", "id")
+            ),
+            sucursales_prefetch
+        ),
+        slug=slug
+    )
+
+    context = {
+        "establecimiento": establecimiento,
+        "es_restaurante": tipo_establecimiento == "restaurante",
+        "es_alojamiento": tipo_establecimiento == "alojamiento",
+        "volver_url_name": "establecimientos:listado_restaurantes"
+        if tipo_establecimiento == "restaurante"
+        else "establecimientos:listado_alojamientos",
+    }
+
+    return render(request, "establecimientos/detalle_establecimiento.html", context)

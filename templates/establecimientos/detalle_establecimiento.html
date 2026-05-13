@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ establecimiento.nombre }} | Viaje Informado Huánuco{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'assets/css/establecimientos.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<main class="establecimientos-pagina est-detalle-pagina">
+
+    <section class="est-detalle-hero">
+        <div class="container">
+            <div class="est-detalle-hero-grid">
+                <div class="est-detalle-hero-contenido">
+                    <a href="{% url volver_url_name %}" class="est-detalle-volver">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver al listado
+                    </a>
+
+                    <div class="est-detalle-etiquetas">
+                        <span>{{ establecimiento.get_tipo_display }}</span>
+                        {% if establecimiento.categoria_principal %}
+                            <span>{{ establecimiento.categoria_principal.nombre }}</span>
+                        {% endif %}
+                        {% if establecimiento.destacado %}
+                            <span>Destacado</span>
+                        {% endif %}
+                    </div>
+
+                    <h1>{{ establecimiento.nombre }}</h1>
+
+                    {% if establecimiento.descripcion_corta %}
+                        <p class="est-detalle-subtitulo">{{ establecimiento.descripcion_corta }}</p>
+                    {% endif %}
+
+                    <div class="est-detalle-meta">
+                        {% if establecimiento.precio_desde or establecimiento.precio_hasta or establecimiento.rango_precio != 'consultar' %}
+                            <div class="est-detalle-meta-item">
+                                <i class="bi bi-tag"></i>
+                                <span>
+                                    {% if establecimiento.precio_desde and establecimiento.precio_hasta %}
+                                        S/ {{ establecimiento.precio_desde|floatformat:0 }} - {{ establecimiento.precio_hasta|floatformat:0 }}
+                                    {% elif establecimiento.precio_desde %}
+                                        Desde S/ {{ establecimiento.precio_desde|floatformat:0 }}
+                                    {% elif establecimiento.precio_hasta %}
+                                        Hasta S/ {{ establecimiento.precio_hasta|floatformat:0 }}
+                                    {% else %}
+                                        {{ establecimiento.get_rango_precio_display }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        {% with sucursal=establecimiento.sucursales.all.0 %}
+                            {% if sucursal and sucursal.direccion %}
+                                <div class="est-detalle-meta-item">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>{{ sucursal.direccion }}</span>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+
+                <div class="est-detalle-hero-media">
+                    {% if establecimiento.imagen_principal %}
+                        <img src="{{ establecimiento.imagen_principal.url }}" alt="{{ establecimiento.texto_alt_imagen|default:establecimiento.nombre }}">
+                    {% else %}
+                        <div class="est-detalle-media-vacia">
+                            <i class="bi bi-image"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="seccion-fondo-principal est-detalle-contenido">
+        <div class="container">
+            <div class="est-detalle-layout">
+                <div class="est-detalle-principal">
+
+                    {% if establecimiento.descripcion %}
+                        <section class="est-detalle-bloque">
+                            <h2>Sobre el establecimiento</h2>
+                            <p>{{ establecimiento.descripcion|linebreaksbr }}</p>
+                        </section>
+                    {% endif %}
+
+                    {% if establecimiento.categorias_secundarias.all %}
+                        <section class="est-detalle-bloque">
+                            <h2>Especialidades</h2>
+                            <div class="est-detalle-chips">
+                                {% for categoria in establecimiento.categorias_secundarias.all %}
+                                    <span>{{ categoria.nombre }}</span>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+
+                    {% if establecimiento.servicios.all %}
+                        <section class="est-detalle-bloque">
+                            <h2>{% if es_restaurante %}Servicios{% else %}Amenidades{% endif %}</h2>
+                            <div class="est-detalle-servicios">
+                                {% for servicio in establecimiento.servicios.all %}
+                                    <div class="est-detalle-servicio">
+                                        {% if servicio.icono_bootstrap %}
+                                            <i class="bi {{ servicio.icono_bootstrap }}"></i>
+                                        {% else %}
+                                            <i class="bi bi-check2-circle"></i>
+                                        {% endif %}
+                                        <span>{{ servicio.nombre }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+
+                    {% if establecimiento.imagenes.all %}
+                        <section class="est-detalle-bloque">
+                            <h2>Galería</h2>
+                            <div class="est-detalle-galeria">
+                                {% for imagen in establecimiento.imagenes.all %}
+                                    <figure>
+                                        <img src="{{ imagen.imagen.url }}" alt="{{ imagen.texto_alt|default:imagen.titulo|default:establecimiento.nombre }}">
+                                        {% if imagen.titulo %}
+                                            <figcaption>{{ imagen.titulo }}</figcaption>
+                                        {% endif %}
+                                    </figure>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+
+                    {% if establecimiento.sucursales.all %}
+                        <section class="est-detalle-bloque">
+                            <h2>Ubicación{% if establecimiento.sucursales.all|length > 1 %}es{% endif %}</h2>
+                            <div class="est-detalle-sucursales">
+                                {% for sucursal in establecimiento.sucursales.all %}
+                                    <article class="est-detalle-sucursal">
+                                        <div>
+                                            <h3>{{ sucursal.nombre }}</h3>
+                                            {% if sucursal.es_principal %}
+                                                <span>Sucursal principal</span>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="est-detalle-datos">
+                                            {% if sucursal.direccion %}
+                                                <p><i class="bi bi-geo-alt"></i>{{ sucursal.direccion }}</p>
+                                            {% endif %}
+                                            {% if sucursal.referencia %}
+                                                <p><i class="bi bi-signpost"></i>{{ sucursal.referencia }}</p>
+                                            {% endif %}
+                                            {% if sucursal.distrito %}
+                                                <p><i class="bi bi-map"></i>{{ sucursal.distrito.nombre }}{% if sucursal.localidad %}, {{ sucursal.localidad.nombre }}{% endif %}</p>
+                                            {% endif %}
+                                            {% if sucursal.horario_atencion %}
+                                                <p><i class="bi bi-clock"></i>{{ sucursal.horario_atencion }}</p>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if sucursal.contactos.all %}
+                                            <div class="est-detalle-contactos-lista">
+                                                {% for contacto in sucursal.contactos.all %}
+                                                    <span>
+                                                        <i class="bi bi-person-lines-fill"></i>
+                                                        {% if contacto.etiqueta %}{{ contacto.etiqueta }}: {% endif %}{{ contacto.valor }}
+                                                    </span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </article>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+
+                </div>
+
+                <aside class="est-detalle-lateral">
+                    <div class="est-detalle-panel">
+                        <h2>Contacto</h2>
+
+                        <div class="est-detalle-acciones">
+                            {% if establecimiento.whatsapp %}
+                                <a href="https://wa.me/{{ establecimiento.whatsapp }}" target="_blank" rel="noopener" class="btn btn-dorado">
+                                    <i class="bi bi-whatsapp"></i>
+                                    WhatsApp
+                                </a>
+                            {% endif %}
+                            {% if establecimiento.telefono %}
+                                <a href="tel:{{ establecimiento.telefono }}" class="btn btn-contorno-dorado">
+                                    <i class="bi bi-telephone"></i>
+                                    Llamar
+                                </a>
+                            {% endif %}
+                            {% if establecimiento.correo %}
+                                <a href="mailto:{{ establecimiento.correo }}" class="btn btn-contorno-dorado">
+                                    <i class="bi bi-envelope"></i>
+                                    Correo
+                                </a>
+                            {% endif %}
+                            {% if establecimiento.sitio_web %}
+                                <a href="{{ establecimiento.sitio_web }}" target="_blank" rel="noopener" class="btn btn-contorno-dorado">
+                                    <i class="bi bi-globe2"></i>
+                                    Sitio web
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        {% if establecimiento.facebook or establecimiento.instagram %}
+                            <div class="est-detalle-redes">
+                                {% if establecimiento.facebook %}
+                                    <a href="{{ establecimiento.facebook }}" target="_blank" rel="noopener" aria-label="Facebook">
+                                        <i class="bi bi-facebook"></i>
+                                    </a>
+                                {% endif %}
+                                {% if establecimiento.instagram %}
+                                    <a href="{{ establecimiento.instagram }}" target="_blank" rel="noopener" aria-label="Instagram">
+                                        <i class="bi bi-instagram"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+{% endblock %}
