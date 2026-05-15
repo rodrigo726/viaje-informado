@@ -4,234 +4,627 @@
 {% block title %}{{ establecimiento.nombre }} | Viaje Informado Huánuco{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <link rel="stylesheet" href="{% static 'assets/css/establecimientos.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/detalle-establecimiento.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<main class="establecimientos-pagina est-detalle-pagina">
+<main
+    class="establecimientos-pagina detalle-establecimiento-pagina {% if es_restaurante %}detalle-restaurante{% else %}detalle-alojamiento{% endif %}">
 
-    <section class="est-detalle-hero">
-        <div class="container">
-            <div class="est-detalle-hero-grid">
-                <div class="est-detalle-hero-contenido">
-                    <a href="{% url volver_url_name %}" class="est-detalle-volver">
-                        <i class="bi bi-arrow-left"></i>
-                        Volver al listado
-                    </a>
+    <!-- HERO ESCRITORIO -->
+    <section class="detalle-hero detalle-hero-desktop">
+        <div class="detalle-hero-container">
 
-                    <div class="est-detalle-etiquetas">
-                        <span>{{ establecimiento.get_tipo_display }}</span>
-                        {% if establecimiento.categoria_principal %}
-                            <span>{{ establecimiento.categoria_principal.nombre }}</span>
-                        {% endif %}
-                        {% if establecimiento.destacado %}
-                            <span>Destacado</span>
-                        {% endif %}
-                    </div>
+            <!-- Breadcrumb escritorio -->
+            <div class="detalle-breadcrumb">
+                <a href="{% url volver_url_name %}">
+                    {% if es_restaurante %}
+                    Restaurantes
+                    {% else %}
+                    Alojamientos
+                    {% endif %}
+                </a>
 
-                    <h1>{{ establecimiento.nombre }}</h1>
+                <span>›</span>
+
+                <strong>{{ establecimiento.nombre }}</strong>
+            </div>
+
+            <div class="detalle-hero-grid">
+
+                <!-- Texto escritorio -->
+                <div class="detalle-hero-info">
+
+                    <h1>{{ establecimiento.nombre|title }}</h1>
 
                     {% if establecimiento.descripcion_corta %}
-                        <p class="est-detalle-subtitulo">{{ establecimiento.descripcion_corta }}</p>
+                    <p class="detalle-hero-subtitulo">
+                        {{ establecimiento.descripcion_corta }}
+                    </p>
                     {% endif %}
 
-                    <div class="est-detalle-meta">
-                        {% if establecimiento.precio_desde or establecimiento.precio_hasta or establecimiento.rango_precio != 'consultar' %}
-                            <div class="est-detalle-meta-item">
-                                <i class="bi bi-tag"></i>
-                                <span>
-                                    {% if establecimiento.precio_desde and establecimiento.precio_hasta %}
-                                        S/ {{ establecimiento.precio_desde|floatformat:0 }} - {{ establecimiento.precio_hasta|floatformat:0 }}
-                                    {% elif establecimiento.precio_desde %}
-                                        Desde S/ {{ establecimiento.precio_desde|floatformat:0 }}
-                                    {% elif establecimiento.precio_hasta %}
-                                        Hasta S/ {{ establecimiento.precio_hasta|floatformat:0 }}
-                                    {% else %}
-                                        {{ establecimiento.get_rango_precio_display }}
-                                    {% endif %}
-                                </span>
-                            </div>
+                    <div class="detalle-hero-meta">
+
+                        {% if establecimiento.precio_desde or establecimiento.precio_hasta %}
+                        <div class="detalle-meta-item">
+                            <i class="bi bi-tag"></i>
+
+                            <span>
+                                {% if establecimiento.precio_desde and establecimiento.precio_hasta %}
+                                Desde S/ {{ establecimiento.precio_desde|floatformat:0 }} - US$ 32
+                                {% elif establecimiento.precio_desde %}
+                                Desde S/ {{ establecimiento.precio_desde|floatformat:0 }}
+                                {% elif establecimiento.precio_hasta %}
+                                Hasta S/ {{ establecimiento.precio_hasta|floatformat:0 }}
+                                {% endif %}
+                            </span>
+                        </div>
                         {% endif %}
 
-                        {% with sucursal=establecimiento.sucursales.all.0 %}
-                            {% if sucursal and sucursal.direccion %}
-                                <div class="est-detalle-meta-item">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <span>{{ sucursal.direccion }}</span>
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {% if sucursal_principal and sucursal_principal.direccion %}
+                        <div class="detalle-meta-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>{{ sucursal_principal.direccion }}</span>
+                        </div>
+                        {% endif %}
+
                     </div>
+
                 </div>
 
-                <div class="est-detalle-hero-media">
-                    {% if establecimiento.imagen_principal %}
-                        <img src="{{ establecimiento.imagen_principal.url }}" alt="{{ establecimiento.texto_alt_imagen|default:establecimiento.nombre }}">
-                    {% else %}
-                        <div class="est-detalle-media-vacia">
-                            <i class="bi bi-image"></i>
+                <!-- Carrusel escritorio -->
+                <div class="detalle-hero-media">
+
+                    {% if media_items %}
+                    {% if media_items_count > 1 %}
+                    <div class="swiper detalle-swiper">
+
+                        <div class="swiper-wrapper">
+                            {% for item in media_items %}
+                            <div class="swiper-slide detalle-swiper-slide">
+                                <img src="{{ item.url }}" alt="{{ item.alt }}">
+                            </div>
+                            {% endfor %}
                         </div>
+
+                        <div class="detalle-swiper-controls">
+                            <button type="button" class="detalle-swiper-play" aria-label="Pausar carrusel">
+                                <i class="bi bi-pause-fill"></i>
+                            </button>
+
+                            <div class="detalle-swiper-pagination"></div>
+                        </div>
+
+                        <div class="detalle-swiper-arrows">
+                            <button type="button" class="detalle-swiper-arrow detalle-swiper-prev"
+                                aria-label="Imagen anterior">
+                                <i class="bi bi-arrow-left"></i>
+                            </button>
+
+                            <button type="button" class="detalle-swiper-arrow detalle-swiper-next"
+                                aria-label="Imagen siguiente">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                    {% else %}
+                    {% for item in media_items %}
+                    <div class="detalle-imagen-estatica">
+                        <img src="{{ item.url }}" alt="{{ item.alt }}">
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% else %}
+                    <div class="detalle-media-vacia">
+                        <i class="bi bi-image"></i>
+                    </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Barra flotante escritorio -->
+            <div class="detalle-hero-barra">
+
+                <div class="detalle-hero-acciones">
+
+                    <button type="button" class="detalle-accion-icono" aria-label="Agregar a favoritos">
+                        <i class="bi bi-heart"></i>
+                    </button>
+
+                    <button type="button" class="detalle-accion-boton">
+                        <i class="bi bi-calendar2-check"></i>
+                        <span>
+                            {% if es_restaurante %}
+                            Ver disponibilidad
+                            {% else %}
+                            Consultar disponibilidad
+                            {% endif %}
+                        </span>
+                    </button>
+
+                    <button type="button" class="detalle-accion-boton">
+                        <i class="bi bi-share"></i>
+                        <span>Compartir</span>
+                    </button>
+
+                </div>
+
+                <div class="detalle-hero-tags">
+                    <span>
+                        {% if es_restaurante %}
+                        Restaurante
+                        {% else %}
+                        Alojamiento
+                        {% endif %}
+                    </span>
+
+                    {% if establecimiento.categoria_principal %}
+                    <span>{{ establecimiento.categoria_principal.nombre }}</span>
+                    {% endif %}
+
+                    {% if es_alojamiento %}
+                    <span>4 estrellas</span>
                     {% endif %}
                 </div>
+
             </div>
+
         </div>
     </section>
 
-    <section class="seccion-fondo-principal est-detalle-contenido">
+    <!-- HERO MÓVIL - basado en prototipo ZIP -->
+    <section class="detalle-mobile-hero">
+
+        <div class="detalle-mobile-topbar">
+            <a href="{% url volver_url_name %}" class="detalle-mobile-back" aria-label="Volver al listado">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+
+            <div class="detalle-mobile-brand">
+                <span>VI</span>
+                <strong>VIAJE INFORMADO</strong>
+            </div>
+
+            <button type="button" class="detalle-mobile-login">
+                <i class="bi bi-person"></i>
+                <span>Entrar</span>
+            </button>
+        </div>
+
+        <div class="detalle-mobile-breadcrumb">
+            <a href="{% url volver_url_name %}">
+                {% if es_restaurante %}
+                Restaurantes
+                {% else %}
+                Alojamientos
+                {% endif %}
+            </a>
+            <span>›</span>
+            <strong>{{ establecimiento.nombre }}</strong>
+        </div>
+
+        <div class="detalle-mobile-media">
+
+            {% if media_items %}
+            <div class="swiper detalle-mobile-swiper">
+
+                <div class="swiper-wrapper">
+                    {% for item in media_items %}
+                    <div class="swiper-slide detalle-mobile-slide">
+                        <img src="{{ item.url }}" alt="{{ item.alt }}">
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="detalle-mobile-counter">
+                    <i class="bi bi-camera"></i>
+                    <span>1 / {{ media_items_count }}</span>
+                </div>
+
+                <div class="detalle-mobile-swiper-controls">
+                    <button type="button" class="detalle-mobile-swiper-play" aria-label="Pausar carrusel">
+                        <i class="bi bi-pause-fill"></i>
+                    </button>
+
+                    <div class="detalle-mobile-pagination"></div>
+                </div>
+
+            </div>
+            {% else %}
+            <div class="detalle-mobile-media-empty">
+                <i class="bi bi-image"></i>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div class="detalle-mobile-info">
+
+            <div class="detalle-mobile-tags">
+                <span>
+                    {% if es_restaurante %}
+                    Restaurante
+                    {% else %}
+                    Alojamiento
+                    {% endif %}
+                </span>
+
+                {% if establecimiento.categoria_principal %}
+                <span>{{ establecimiento.categoria_principal.nombre }}</span>
+                {% endif %}
+
+                {% if es_alojamiento %}
+                <span>4★</span>
+                {% endif %}
+
+                {% if es_restaurante %}
+                <span class="detalle-mobile-open">Abierto</span>
+                {% endif %}
+            </div>
+
+            <h1>{{ establecimiento.nombre|title }}</h1>
+
+            {% if establecimiento.descripcion_corta %}
+            <p>{{ establecimiento.descripcion_corta }}</p>
+            {% endif %}
+
+            <div class="detalle-mobile-meta">
+                <div>
+                    <span class="detalle-mobile-stars">★★★★★</span>
+                    <strong>4.7</strong>
+                    <a href="#">248 reseñas</a>
+                </div>
+
+                {% if sucursal_principal and sucursal_principal.direccion %}
+                <div>
+                    <i class="bi bi-geo-alt"></i>
+                    <span>{{ sucursal_principal.direccion }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if contacto_whatsapp %}
+            <a href="https://wa.me/{{ contacto_whatsapp }}" target="_blank" rel="noopener"
+                class="detalle-mobile-whatsapp">
+                <i class="bi bi-whatsapp"></i>
+                Contactar por WhatsApp
+            </a>
+            {% endif %}
+
+            <div class="detalle-mobile-actions">
+                {% if contacto_telefono %}
+                <a href="tel:{{ contacto_telefono }}">
+                    <i class="bi bi-telephone"></i>
+                    <span>Llamar</span>
+                </a>
+                {% else %}
+                <button type="button">
+                    <i class="bi bi-telephone"></i>
+                    <span>Llamar</span>
+                </button>
+                {% endif %}
+
+                {% if direccion_mapa %}
+                <a href="https://www.google.com/maps/dir/?api=1&destination={{ direccion_mapa|urlencode }}"
+                    target="_blank" rel="noopener">
+                    <i class="bi bi-send"></i>
+                    <span>Cómo llegar</span>
+                </a>
+                {% else %}
+                <button type="button">
+                    <i class="bi bi-send"></i>
+                    <span>Cómo llegar</span>
+                </button>
+                {% endif %}
+
+                <button type="button">
+                    <i class="bi bi-heart"></i>
+                    <span>Guardar</span>
+                </button>
+            </div>
+
+            <div class="detalle-mobile-tabs">
+                <a href="#detalle-sobre">Establecimiento</a>
+
+                {% if es_alojamiento %}
+                <a href="#detalle-servicios">Amenidades</a>
+                {% else %}
+                <a href="#detalle-servicios">Servicios</a>
+                {% endif %}
+
+                <a href="#detalle-tarifas">Tarifas</a>
+                <a href="#detalle-ubicacion">Ubicación</a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- CONTENIDO -->
+    <section class="detalle-contenido">
         <div class="container">
-            <div class="est-detalle-layout">
-                <div class="est-detalle-principal">
+            <div class="detalle-layout">
+
+                <!-- Columna principal -->
+                <div class="detalle-principal">
 
                     {% if establecimiento.descripcion %}
-                        <section class="est-detalle-bloque">
-                            <h2>Sobre el establecimiento</h2>
-                            <p>{{ establecimiento.descripcion|linebreaksbr }}</p>
-                        </section>
-                    {% endif %}
+                    <section class="detalle-bloque" id="detalle-sobre">
+                        <div class="detalle-bloque-encabezado">
+                            <span>
+                                {% if es_restaurante %}
+                                Propuesta gastronómica
+                                {% else %}
+                                Sobre el establecimiento
+                                {% endif %}
+                            </span>
 
-                    {% if establecimiento.categorias_secundarias.all %}
-                        <section class="est-detalle-bloque">
-                            <h2>Especialidades</h2>
-                            <div class="est-detalle-chips">
-                                {% for categoria in establecimiento.categorias_secundarias.all %}
-                                    <span>{{ categoria.nombre }}</span>
-                                {% endfor %}
-                            </div>
-                        </section>
+                            <h2>Sobre el establecimiento</h2>
+                        </div>
+
+                        <p>{{ establecimiento.descripcion|linebreaksbr }}</p>
+                    </section>
                     {% endif %}
 
                     {% if establecimiento.servicios.all %}
-                        <section class="est-detalle-bloque">
-                            <h2>{% if es_restaurante %}Servicios{% else %}Amenidades{% endif %}</h2>
-                            <div class="est-detalle-servicios">
-                                {% for servicio in establecimiento.servicios.all %}
-                                    <div class="est-detalle-servicio">
-                                        {% if servicio.icono_bootstrap %}
-                                            <i class="bi {{ servicio.icono_bootstrap }}"></i>
-                                        {% else %}
-                                            <i class="bi bi-check2-circle"></i>
+                    <section class="detalle-bloque" id="detalle-servicios">
+                        <div class="detalle-bloque-encabezado">
+                            <span>
+                                {% if es_restaurante %}
+                                Servicios
+                                {% else %}
+                                Amenidades y servicios
+                                {% endif %}
+                            </span>
+
+                            <h2>
+                                {% if es_restaurante %}
+                                Servicios
+                                {% else %}
+                                Amenidades y servicios
+                                {% endif %}
+                            </h2>
+                        </div>
+
+                        <div class="detalle-servicios">
+                            {% for servicio in establecimiento.servicios.all %}
+                            <div class="detalle-servicio">
+                                {% if servicio.icono_bootstrap %}
+                                <i class="bi {{ servicio.icono_bootstrap }}"></i>
+                                {% else %}
+                                <i class="bi bi-check2-circle"></i>
+                                {% endif %}
+
+                                <span>{{ servicio.nombre }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    {% endif %}
+
+                    {% if establecimiento.precio_desde or establecimiento.precio_hasta %}
+                    <section class="detalle-bloque" id="detalle-tarifas">
+                        <div class="detalle-bloque-encabezado">
+                            <span>
+                                {% if es_restaurante %}
+                                Rango de precios por plato
+                                {% else %}
+                                Rango de precios por noche
+                                {% endif %}
+                            </span>
+
+                            <h2>Tarifas</h2>
+                        </div>
+
+                        <div class="detalle-tarifas-grid">
+
+                            {% if establecimiento.precio_desde %}
+                            <div class="detalle-tarifa-card">
+                                <small>
+                                    {% if es_restaurante %}
+                                    Plato individual desde
+                                    {% else %}
+                                    Habitación estándar
+                                    {% endif %}
+                                </small>
+
+                                <strong>S/ {{ establecimiento.precio_desde|floatformat:0 }}</strong>
+
+                                <span>≈ US$ 32 · Precio referencial al tipo de cambio</span>
+                            </div>
+                            {% endif %}
+
+                            {% if establecimiento.precio_hasta %}
+                            <div class="detalle-tarifa-card detalle-tarifa-card--destacada">
+                                <small>
+                                    {% if es_restaurante %}
+                                    Plato premium hasta
+                                    {% else %}
+                                    Suite / opción premium
+                                    {% endif %}
+                                </small>
+
+                                <strong>S/ {{ establecimiento.precio_hasta|floatformat:0 }}</strong>
+
+                                <span>≈ US$ 58 · Precio referencial al tipo de cambio</span>
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    </section>
+                    {% endif %}
+
+                    {% if direccion_mapa %}
+                    <section class="detalle-bloque detalle-bloque-mapa" id="detalle-ubicacion">
+                        <div class="detalle-bloque-encabezado detalle-bloque-encabezado-flex">
+                            <div>
+                                <span>Cómo llegar</span>
+                                <h2>Ubicación</h2>
+                            </div>
+
+                            <div class="detalle-mapa-acciones-superior">
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ direccion_mapa|urlencode }}"
+                                    target="_blank" rel="noopener">
+                                    <i class="bi bi-map"></i>
+                                    Abrir mapa
+                                </a>
+
+                                <a href="https://www.google.com/maps/dir/?api=1&destination={{ direccion_mapa|urlencode }}"
+                                    target="_blank" rel="noopener">
+                                    <i class="bi bi-signpost-2"></i>
+                                    Cómo llegar
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="detalle-mapa">
+                            <iframe src="https://www.google.com/maps?q={{ direccion_mapa|urlencode }}&output=embed"
+                                loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen>
+                            </iframe>
+                        </div>
+                    </section>
+                    {% endif %}
+
+                    {% if sucursales %}
+                    <section class="detalle-bloque">
+                        <div class="detalle-bloque-encabezado">
+                            <span>
+                                {% if sucursales|length > 1 %}
+                                Sucursales
+                                {% else %}
+                                Local principal
+                                {% endif %}
+                            </span>
+
+                            <h2>
+                                {% if sucursales|length > 1 %}
+                                Ubicaciones disponibles
+                                {% else %}
+                                Dirección principal
+                                {% endif %}
+                            </h2>
+                        </div>
+
+                        <div class="detalle-sucursales">
+                            {% for sucursal in sucursales %}
+                            <article class="detalle-sucursal">
+                                <div class="detalle-sucursal-header">
+                                    <div>
+                                        <h3>{{ sucursal.nombre }}</h3>
+
+                                        {% if sucursal.es_principal %}
+                                        <span>Local principal</span>
                                         {% endif %}
-                                        <span>{{ servicio.nombre }}</span>
                                     </div>
-                                {% endfor %}
-                            </div>
-                        </section>
-                    {% endif %}
+                                </div>
 
-                    {% if establecimiento.imagenes.all %}
-                        <section class="est-detalle-bloque">
-                            <h2>Galería</h2>
-                            <div class="est-detalle-galeria">
-                                {% for imagen in establecimiento.imagenes.all %}
-                                    <figure>
-                                        <img src="{{ imagen.imagen.url }}" alt="{{ imagen.texto_alt|default:imagen.titulo|default:establecimiento.nombre }}">
-                                        {% if imagen.titulo %}
-                                            <figcaption>{{ imagen.titulo }}</figcaption>
-                                        {% endif %}
-                                    </figure>
-                                {% endfor %}
-                            </div>
-                        </section>
-                    {% endif %}
+                                <div class="detalle-sucursal-datos">
 
-                    {% if establecimiento.sucursales.all %}
-                        <section class="est-detalle-bloque">
-                            <h2>Ubicación{% if establecimiento.sucursales.all|length > 1 %}es{% endif %}</h2>
-                            <div class="est-detalle-sucursales">
-                                {% for sucursal in establecimiento.sucursales.all %}
-                                    <article class="est-detalle-sucursal">
-                                        <div>
-                                            <h3>{{ sucursal.nombre }}</h3>
-                                            {% if sucursal.es_principal %}
-                                                <span>Sucursal principal</span>
-                                            {% endif %}
-                                        </div>
+                                    {% if sucursal.direccion %}
+                                    <p>
+                                        <i class="bi bi-geo-alt"></i>
+                                        <span>{{ sucursal.direccion }}</span>
+                                    </p>
+                                    {% endif %}
 
-                                        <div class="est-detalle-datos">
-                                            {% if sucursal.direccion %}
-                                                <p><i class="bi bi-geo-alt"></i>{{ sucursal.direccion }}</p>
-                                            {% endif %}
-                                            {% if sucursal.referencia %}
-                                                <p><i class="bi bi-signpost"></i>{{ sucursal.referencia }}</p>
-                                            {% endif %}
-                                            {% if sucursal.distrito %}
-                                                <p><i class="bi bi-map"></i>{{ sucursal.distrito.nombre }}{% if sucursal.localidad %}, {{ sucursal.localidad.nombre }}{% endif %}</p>
-                                            {% endif %}
-                                            {% if sucursal.horario_atencion %}
-                                                <p><i class="bi bi-clock"></i>{{ sucursal.horario_atencion }}</p>
-                                            {% endif %}
-                                        </div>
+                                    {% if sucursal.referencia %}
+                                    <p>
+                                        <i class="bi bi-signpost"></i>
+                                        <span>{{ sucursal.referencia }}</span>
+                                    </p>
+                                    {% endif %}
 
-                                        {% if sucursal.contactos.all %}
-                                            <div class="est-detalle-contactos-lista">
-                                                {% for contacto in sucursal.contactos.all %}
-                                                    <span>
-                                                        <i class="bi bi-person-lines-fill"></i>
-                                                        {% if contacto.etiqueta %}{{ contacto.etiqueta }}: {% endif %}{{ contacto.valor }}
-                                                    </span>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                    </article>
-                                {% endfor %}
-                            </div>
-                        </section>
+                                    {% if sucursal.distrito %}
+                                    <p>
+                                        <i class="bi bi-map"></i>
+                                        <span>
+                                            {{ sucursal.distrito }}
+                                            {% if sucursal.localidad %}
+                                            , {{ sucursal.localidad }}
+                                            {% endif %}
+                                        </span>
+                                    </p>
+                                    {% endif %}
+
+                                    {% if sucursal.horario_atencion %}
+                                    <p>
+                                        <i class="bi bi-clock"></i>
+                                        <span>{{ sucursal.horario_atencion }}</span>
+                                    </p>
+                                    {% endif %}
+
+                                </div>
+                            </article>
+                            {% endfor %}
+                        </div>
+                    </section>
                     {% endif %}
 
                 </div>
 
-                <aside class="est-detalle-lateral">
-                    <div class="est-detalle-panel">
-                        <h2>Contacto</h2>
+                <!-- Columna lateral -->
+                <aside class="detalle-lateral">
+                    <div class="detalle-panel-contacto">
 
-                        <div class="est-detalle-acciones">
-                            {% if establecimiento.whatsapp %}
-                                <a href="https://wa.me/{{ establecimiento.whatsapp }}" target="_blank" rel="noopener" class="btn btn-dorado">
-                                    <i class="bi bi-whatsapp"></i>
-                                    WhatsApp
-                                </a>
+                        <span class="detalle-panel-small">Contacto directo</span>
+
+                        <h2>
+                            {% if es_restaurante %}
+                            Haz tu pedido
+                            {% else %}
+                            Reserva tu estancia
                             {% endif %}
-                            {% if establecimiento.telefono %}
-                                <a href="tel:{{ establecimiento.telefono }}" class="btn btn-contorno-dorado">
-                                    <i class="bi bi-telephone"></i>
-                                    Llamar
-                                </a>
+                        </h2>
+
+                        <div class="detalle-acciones-contacto">
+
+                            {% if contacto_whatsapp %}
+                            <a href="https://wa.me/{{ contacto_whatsapp }}" target="_blank" rel="noopener"
+                                class="detalle-contacto-whatsapp">
+                                <i class="bi bi-whatsapp"></i>
+                                WhatsApp
+                            </a>
                             {% endif %}
-                            {% if establecimiento.correo %}
-                                <a href="mailto:{{ establecimiento.correo }}" class="btn btn-contorno-dorado">
-                                    <i class="bi bi-envelope"></i>
-                                    Correo
-                                </a>
+
+                            {% if contacto_telefono %}
+                            <a href="tel:{{ contacto_telefono }}">
+                                <i class="bi bi-telephone"></i>
+                                {{ contacto_telefono }}
+                            </a>
                             {% endif %}
+
+                            {% if contacto_correo %}
+                            <a href="mailto:{{ contacto_correo }}">
+                                <i class="bi bi-envelope"></i>
+                                {{ contacto_correo }}
+                            </a>
+                            {% endif %}
+
                             {% if establecimiento.sitio_web %}
-                                <a href="{{ establecimiento.sitio_web }}" target="_blank" rel="noopener" class="btn btn-contorno-dorado">
-                                    <i class="bi bi-globe2"></i>
-                                    Sitio web
-                                </a>
+                            <a href="{{ establecimiento.sitio_web }}" target="_blank" rel="noopener">
+                                <i class="bi bi-globe2"></i>
+                                {{ establecimiento.sitio_web|cut:"https://"|cut:"http://" }}
+                            </a>
                             {% endif %}
+
                         </div>
 
-                        {% if establecimiento.facebook or establecimiento.instagram %}
-                            <div class="est-detalle-redes">
-                                {% if establecimiento.facebook %}
-                                    <a href="{{ establecimiento.facebook }}" target="_blank" rel="noopener" aria-label="Facebook">
-                                        <i class="bi bi-facebook"></i>
-                                    </a>
-                                {% endif %}
-                                {% if establecimiento.instagram %}
-                                    <a href="{{ establecimiento.instagram }}" target="_blank" rel="noopener" aria-label="Instagram">
-                                        <i class="bi bi-instagram"></i>
-                                    </a>
-                                {% endif %}
-                            </div>
-                        {% endif %}
                     </div>
                 </aside>
+
             </div>
         </div>
     </section>
 
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="{% static 'assets/js/swiper-detalle-est.js' %}"></script>
 
 {% endblock %}

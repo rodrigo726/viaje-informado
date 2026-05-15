@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
 from django.db.models import Q, Prefetch
+
 from .models import (
     ContactoSucursalEstablecimiento,
     Establecimiento,
@@ -115,49 +116,49 @@ def get_listado_context(request, tipo_establecimiento, titulo, subtitulo):
     # Opciones de orden preparadas para el template.
     # Así el select muestra correctamente la opción seleccionada.
     opciones_orden = [
-    {
-        "value": "",
-        "label": "Seleccione",
-        "selected": orden == "",
-    },
-    {
-        "value": "nombre_asc",
-        "label": "Nombre Ascendente",
-        "selected": orden == "nombre_asc",
-    },
-    {
-        "value": "nombre_desc",
-        "label": "Nombre Descendente",
-        "selected": orden == "nombre_desc",
-    },
-    {
-        "value": "precio_asc",
-        "label": "Menor a Mayor Precio",
-        "selected": orden == "precio_asc",
-    },
-    {
-        "value": "precio_desc",
-        "label": "Mayor a Menor Precio",
-        "selected": orden == "precio_desc",
-    },
+        {
+            "value": "",
+            "label": "Seleccione",
+            "selected": orden == "",
+        },
+        {
+            "value": "nombre_asc",
+            "label": "Nombre Ascendente",
+            "selected": orden == "nombre_asc",
+        },
+        {
+            "value": "nombre_desc",
+            "label": "Nombre Descendente",
+            "selected": orden == "nombre_desc",
+        },
+        {
+            "value": "precio_asc",
+            "label": "Menor a Mayor Precio",
+            "selected": orden == "precio_asc",
+        },
+        {
+            "value": "precio_desc",
+            "label": "Mayor a Menor Precio",
+            "selected": orden == "precio_desc",
+        },
     ]
 
     context = {
-    "page_obj": page_obj,
-    "titulo": titulo,
-    "subtitulo": subtitulo,
-    "tipo": tipo_establecimiento,
-    "q": q,
-    "categoria_sel": categoria_id,
-    "orden_sel": orden,
-    "categorias": categorias,
-    "categorias_opciones": categorias_opciones,
-    "opciones_orden": opciones_orden,
-    "total_resultados": paginator.count,
+        "page_obj": page_obj,
+        "titulo": titulo,
+        "subtitulo": subtitulo,
+        "tipo": tipo_establecimiento,
+        "q": q,
+        "categoria_sel": categoria_id,
+        "orden_sel": orden,
+        "categorias": categorias,
+        "categorias_opciones": categorias_opciones,
+        "opciones_orden": opciones_orden,
+        "total_resultados": paginator.count,
 
-    # Switcher de apartados
-    "es_restaurante": tipo_establecimiento == "restaurante",
-    "es_alojamiento": tipo_establecimiento == "alojamiento",
+        # Switcher de apartados
+        "es_restaurante": tipo_establecimiento == "restaurante",
+        "es_alojamiento": tipo_establecimiento == "alojamiento",
     }
 
     return context
@@ -184,6 +185,17 @@ def listado_alojamientos(request):
 
 
 def detalle_establecimiento(request, tipo_establecimiento, slug):
+    """
+    Vista pública de detalle para restaurantes y alojamientos.
+
+    Prepara datos existentes para:
+    - Hero / carrusel visual.
+    - Contactos reales.
+    - Sucursal principal.
+    - Dirección para mapa.
+    - Diferenciación visual entre restaurante y alojamiento.
+    """
+
     sucursales_prefetch = Prefetch(
         "sucursales",
         queryset=SucursalEstablecimiento.objects.filter(
@@ -218,28 +230,118 @@ def detalle_establecimiento(request, tipo_establecimiento, slug):
         ).prefetch_related(
             Prefetch(
                 "categorias_secundarias",
-                queryset=CategoriaEstablecimiento.objects.filter(activo=True).order_by("nombre")
+                queryset=CategoriaEstablecimiento.objects.filter(
+                    activo=True
+                ).order_by("nombre")
             ),
             Prefetch(
                 "servicios",
-                queryset=ServicioEstablecimiento.objects.filter(activo=True).order_by("nombre")
+                queryset=ServicioEstablecimiento.objects.filter(
+                    activo=True
+                ).order_by("nombre")
             ),
             Prefetch(
                 "imagenes",
-                queryset=ImagenEstablecimiento.objects.filter(activo=True).order_by("orden", "id")
+                queryset=ImagenEstablecimiento.objects.filter(
+                    activo=True
+                ).order_by("orden", "id")
             ),
             sucursales_prefetch
         ),
         slug=slug
     )
 
+    # Sucursales ordenadas: principal primero.
+    sucursales = list(establecimiento.sucursales.all())
+    sucursal_principal = sucursales[0] if sucursales else None
+
+    # Contactos principales.
+    # Orden de prioridad:
+    # 1. Contacto guardado directamente en Establecimiento.
+    # 2. Contacto guardado en Sucursal.
+    # 3. Contacto adicional registrado en ContactoSucursalEstablecimiento.
+    contacto_whatsapp = establecimiento.whatsapp
+    contacto_telefono = establecimiento.telefono
+    contacto_correo = establecimiento.correo
+
+    for sucursal in sucursales:
+        if not contacto_whatsapp and sucursal.whatsapp:
+            contacto_whatsapp = sucursal.whatsapp
+
+        if not contacto_telefono and sucursal.telefono:
+            contacto_telefono = sucursal.telefono
+
+        if not contacto_correo and sucursal.correo:
+            contacto_correo = sucursal.correo
+
+        for contacto in sucursal.contactos.all():
+            if not contacto_whatsapp and contacto.tipo_contacto == "whatsapp":
+                contacto_whatsapp = contacto.valor
+
+            if not contacto_telefono and contacto.tipo_contacto in [
+                "telefono",
+                "celular",
+                "reservas",
+                "atencion_cliente",
+            ]:
+                contacto_telefono = contacto.valor
+
+            if not contacto_correo and contacto.tipo_contacto == "correo":
+                contacto_correo = contacto.valor
+
+    # Imágenes para el carrusel del detalle.
+    # Solo usamos las imágenes registradas en "Imágenes de establecimientos".
+    # La imagen principal del establecimiento queda reservada para el listado.
+    media_items = []
+    urls_agregadas = set()
+
+    for imagen in establecimiento.imagenes.all():
+        if imagen.imagen and imagen.imagen.url not in urls_agregadas:
+            media_items.append({
+                "url": imagen.imagen.url,
+                "alt": imagen.texto_alt or imagen.titulo or establecimiento.nombre,
+                "titulo": imagen.titulo,
+            })
+            urls_agregadas.add(imagen.imagen.url)
+
+    # Dirección preparada para Google Maps.
+    # Se usa str() para evitar depender de campos como distrito.nombre.
+    direccion_mapa = ""
+
+    if sucursal_principal and sucursal_principal.direccion:
+        direccion_partes = [sucursal_principal.direccion]
+
+        if sucursal_principal.distrito:
+            direccion_partes.append(str(sucursal_principal.distrito))
+
+        if sucursal_principal.localidad:
+            direccion_partes.append(str(sucursal_principal.localidad))
+
+        direccion_partes.append("Huánuco")
+        direccion_partes.append("Perú")
+
+        direccion_mapa = ", ".join(direccion_partes)
+
     context = {
         "establecimiento": establecimiento,
         "es_restaurante": tipo_establecimiento == "restaurante",
         "es_alojamiento": tipo_establecimiento == "alojamiento",
+
+        # Datos preparados para el detalle
+        "sucursales": sucursales,
+        "sucursal_principal": sucursal_principal,
+        "contacto_whatsapp": contacto_whatsapp,
+        "contacto_telefono": contacto_telefono,
+        "contacto_correo": contacto_correo,
+        "media_items": media_items,
+        "media_items_count": len(media_items),
+        "direccion_mapa": direccion_mapa,
+
+        # URL de retorno
         "volver_url_name": "establecimientos:listado_restaurantes"
         if tipo_establecimiento == "restaurante"
         else "establecimientos:listado_alojamientos",
     }
 
     return render(request, "establecimientos/detalle_establecimiento.html", context)
+    
